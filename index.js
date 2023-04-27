@@ -1,5 +1,6 @@
 require('dotenv/config')
 const express = require('express')
+const handleError = require('./src/helpers/handleError')
 
 const app = express()
 const db = require('./src/db/conn')
@@ -15,6 +16,8 @@ app.use(
 )
 
 // Models
-const { User } = require('./src/models/index')
+const { User, Account } = require('./src/models/index')
+
+app.use(handleError)
 
 app.listen(process.env.SERVER_PORT)
