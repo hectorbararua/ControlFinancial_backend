@@ -18,6 +18,12 @@ app.use(
 // Models
 const { User, Account } = require('./src/models/index')
 
+// Routes
+
+const UserRoutes = require('./src/routes/UserRoutes')
+
+app.use('/user', UserRoutes)
+
 app.use(handleError)
 
 app.listen(process.env.SERVER_PORT)

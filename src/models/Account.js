@@ -7,24 +7,19 @@ const AccountSchema = new mongoose.Schema({
     require: true
   },
   entryTotal: {
-    type: Number,
-    trim: true
+    type: Number
   },
   outputTotal: {
-    type: Number,
-    trim: true
+    type: Number
   },
   balence: {
-    type: Number,
-    trim: true
+    type: Number
   },
   deposit: {
-    type: Number,
-    trim: true
+    type: Number
   },
   withdrawal: {
-    type: Number,
-    trim: true
+    type: Number
   }
 })
 
