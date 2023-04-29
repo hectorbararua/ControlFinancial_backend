@@ -61,8 +61,8 @@ module.exports = class AccountController {
     const decoded = decodedToken(token)
 
     // Busca a conta pelo id do usuário
-    const seeAccount = await Account.findById(decoded.id)
+    const account = await Account.findOne({ UserId: decoded.id })
 
-    res.status(200).json(seeAccount)
+    res.status(200).json(account)
   }
 }
