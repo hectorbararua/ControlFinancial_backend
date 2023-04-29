@@ -39,7 +39,7 @@ module.exports = class AccountController {
       // Busca a conta pelo id do usuário
       const account = await Account.findOne({ UserId: decoded.id })
 
-      if (withdrawal > account.balence) throw new Error('Valor Indisponível')
+      if (withdrawal > account.balence) throw new Error('Saldo insuficiente')
       // Depositando o valor na conta
       const updated = await Account.findByIdAndUpdate(account.id, {
         withdrawal,
