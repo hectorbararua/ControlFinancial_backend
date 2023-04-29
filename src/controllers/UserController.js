@@ -1,5 +1,4 @@
-const User = require('../models/User')
-const Account = require('../models/Account')
+const { User, Account } = require('../models/index')
 
 const bcrypt = require('bcrypt')
 
@@ -36,7 +35,12 @@ module.exports = class UserController {
       const newUser = user.save()
 
       const account = new Account({
-        UserId: user.id
+        UserId: user.id,
+        deposit: 0,
+        withdrawal: 0,
+        entryTotal: 0,
+        outputTotal: 0,
+        balence: 0
       })
 
       const newAccount = account.save()

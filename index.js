@@ -21,8 +21,10 @@ const { User, Account } = require('./src/models/index')
 // Routes
 
 const UserRoutes = require('./src/routes/UserRoutes')
+const AccountRoutes = require('./src/routes/AccountRoutes')
 
 app.use('/user', UserRoutes)
+app.use('/account', AccountRoutes)
 
 app.use(handleError)
 
