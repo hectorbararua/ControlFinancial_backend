@@ -13,56 +13,47 @@ module.exports = class AccountController {
       // Busca a conta pelo id do usuário
       const account = await Account.findOne({ UserId: decoded.id })
 
-      if (operationType === 'deposit') {
-        // Depositando o valor na conta
-        const updated = await Account.findByIdAndUpdate(account.id, {
-          amount: amount,
-          description,
-          entryTotal: (account.entryTotal += amount),
-          balence: (account.balence += amount)
-        })
-
-        const extract = new Extract({
-          UserId: decoded.id,
-          value: amount,
-          descriptionValue: description,
-          type: 'Entry'
-        })
-
-        await extract.save()
-
-        res.status(200).json({
-          message: 'Depósito Realizado!',
-          amount,
-          description
-        })
-      } else if (operationType === 'withdrawal') {
+      if (operationType === 'withdrawal') {
         if (amount > account.balence) throw new Error('Saldo insuficiente')
-        // Sacando o valor da conta
-        const updated = await Account.findByIdAndUpdate(account.id, {
-          amount: amount,
-          description,
-          outputTotal: (account.outputTotal += amount),
-          balence: (account.balence -= amount)
-        })
-
-        const extract = new Extract({
-          UserId: decoded.id,
-          value: amount,
-          descriptionValue: description,
-          type: 'Output'
-        })
-
-        await extract.save()
-
-        res.status(200).json({
-          message: 'Saque Realizado!',
-          amount,
-          description
-        })
-      } else {
-        throw new Error('Selecione o tipo da operação!')
       }
+      // Depositando o valor na conta
+
+      const updatedParams =
+        operationType === 'withdrawal'
+          ? {
+              amount,
+              description,
+              outputTotal: (account.outputTotal += amount),
+              balence: (account.balence -= amount)
+            }
+          : {
+              amount,
+              description,
+              entryTotal: (account.entryTotal += amount),
+              balence: (account.balence += amount)
+            }
+
+      await Account.findByIdAndUpdate(account.id, updatedParams)
+
+      const extract = new Extract({
+        UserId: decoded.id,
+        value: amount,
+        descriptionValue: description,
+        type: operationType
+      })
+
+      await extract.save()
+
+      const message =
+        operationType === 'withdrawal'
+          ? 'Saque realizado!'
+          : 'Depósito realizado!'
+
+      res.status(200).json({
+        message,
+        amount,
+        description
+      })
     } catch (error) {
       res.status(400).json({ message: error.message })
     }
