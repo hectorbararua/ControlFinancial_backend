@@ -3,9 +3,9 @@ const getToken = require('../helpers/get-token')
 const decodedToken = require('../helpers/decoded_token')
 
 module.exports = class AccountController {
-  static async deposit(req, res) {
+  static async transaction(req, res) {
     try {
-      const { deposit, description } = req.body
+      const { operationType, amount, description } = req.body
 
       const token = getToken(req)
       const decoded = decodedToken(token)
@@ -13,66 +13,56 @@ module.exports = class AccountController {
       // Busca a conta pelo id do usuário
       const account = await Account.findOne({ UserId: decoded.id })
 
-      // Depositando o valor na conta
-      const updated = await Account.findByIdAndUpdate(account.id, {
-        deposit,
-        description,
-        entryTotal: (account.entryTotal += deposit),
-        balence: (account.balence += deposit)
-      })
+      if (operationType === 'deposit') {
+        // Depositando o valor na conta
+        const updated = await Account.findByIdAndUpdate(account.id, {
+          deposit: amount,
+          description,
+          entryTotal: (account.entryTotal += amount),
+          balence: (account.balence += amount)
+        })
 
-      const extract = new Extract({
-        UserId: decoded.id,
-        value: deposit,
-        descriptionValue: description,
-        type: 'Entry'
-      })
+        const extract = new Extract({
+          UserId: decoded.id,
+          value: amount,
+          descriptionValue: description,
+          type: 'Entry'
+        })
 
-      await extract.save()
+        await extract.save()
 
-      res.status(200).json({
-        message: 'Deposito Realizado!',
-        deposit,
-        description
-      })
-    } catch (error) {
-      res.status(400).json({ message: error.message })
-    }
-  }
+        res.status(200).json({
+          message: 'Depósito Realizado!',
+          amount,
+          description
+        })
+      } else if (operationType === 'withdrawal') {
+        if (amount > account.balence) throw new Error('Saldo insuficiente')
+        // Sacando o valor da conta
+        const updated = await Account.findByIdAndUpdate(account.id, {
+          withdrawal: amount,
+          description,
+          outputTotal: (account.outputTotal += amount),
+          balence: (account.balence -= amount)
+        })
 
-  static async withdrawal(req, res) {
-    try {
-      const { withdrawal, description } = req.body
+        const extract = new Extract({
+          UserId: decoded.id,
+          value: amount,
+          descriptionValue: description,
+          type: 'Output'
+        })
 
-      const token = getToken(req)
-      const decoded = decodedToken(token)
+        await extract.save()
 
-      // Busca a conta pelo id do usuário
-      const account = await Account.findOne({ UserId: decoded.id })
-
-      if (withdrawal > account.balence) throw new Error('Saldo insuficiente')
-      // Depositando o valor na conta
-      const updated = await Account.findByIdAndUpdate(account.id, {
-        withdrawal,
-        description,
-        outputTotal: (account.outputTotal += withdrawal),
-        balence: (account.balence -= withdrawal)
-      })
-
-      const extract = new Extract({
-        UserId: decoded.id,
-        value: withdrawal,
-        descriptionValue: description,
-        type: 'Output'
-      })
-
-      await extract.save()
-
-      res.status(200).json({
-        message: 'Saque Realizado!',
-        withdrawal,
-        description
-      })
+        res.status(200).json({
+          message: 'Saque Realizado!',
+          amount,
+          description
+        })
+      } else {
+        throw new Error('Selecione o tipo da operação!')
+      }
     } catch (error) {
       res.status(400).json({ message: error.message })
     }
