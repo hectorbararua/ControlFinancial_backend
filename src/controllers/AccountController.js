@@ -16,7 +16,7 @@ module.exports = class AccountController {
       if (operationType === 'deposit') {
         // Depositando o valor na conta
         const updated = await Account.findByIdAndUpdate(account.id, {
-          deposit: amount,
+          amount: amount,
           description,
           entryTotal: (account.entryTotal += amount),
           balence: (account.balence += amount)
@@ -40,7 +40,7 @@ module.exports = class AccountController {
         if (amount > account.balence) throw new Error('Saldo insuficiente')
         // Sacando o valor da conta
         const updated = await Account.findByIdAndUpdate(account.id, {
-          withdrawal: amount,
+          amount: amount,
           description,
           outputTotal: (account.outputTotal += amount),
           balence: (account.balence -= amount)

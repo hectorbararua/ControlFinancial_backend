@@ -15,10 +15,7 @@ const AccountSchema = new mongoose.Schema({
   balence: {
     type: Number
   },
-  deposit: {
-    type: Number
-  },
-  withdrawal: {
+  amount: {
     type: Number
   },
   description: {
