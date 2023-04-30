@@ -20,6 +20,9 @@ const AccountSchema = new mongoose.Schema({
   },
   withdrawal: {
     type: Number
+  },
+  description: {
+    type: String
   }
 })
 

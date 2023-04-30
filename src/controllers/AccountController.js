@@ -1,11 +1,11 @@
-const { Account } = require('../models/index')
+const { Account, Extract } = require('../models/index')
 const getToken = require('../helpers/get-token')
 const decodedToken = require('../helpers/decoded_token')
 
 module.exports = class AccountController {
   static async deposit(req, res) {
     try {
-      const { deposit } = req.body
+      const { deposit, description } = req.body
 
       const token = getToken(req)
       const decoded = decodedToken(token)
@@ -16,13 +16,24 @@ module.exports = class AccountController {
       // Depositando o valor na conta
       const updated = await Account.findByIdAndUpdate(account.id, {
         deposit,
+        description,
         entryTotal: (account.entryTotal += deposit),
         balence: (account.balence += deposit)
       })
 
+      const extract = new Extract({
+        UserId: decoded.id,
+        value: deposit,
+        descriptionValue: description,
+        type: 'Entry'
+      })
+
+      await extract.save()
+
       res.status(200).json({
         message: 'Deposito Realizado!',
-        deposit
+        deposit,
+        description
       })
     } catch (error) {
       res.status(400).json({ message: error.message })
@@ -31,7 +42,7 @@ module.exports = class AccountController {
 
   static async withdrawal(req, res) {
     try {
-      const { withdrawal } = req.body
+      const { withdrawal, description } = req.body
 
       const token = getToken(req)
       const decoded = decodedToken(token)
@@ -43,13 +54,24 @@ module.exports = class AccountController {
       // Depositando o valor na conta
       const updated = await Account.findByIdAndUpdate(account.id, {
         withdrawal,
+        description,
         outputTotal: (account.outputTotal += withdrawal),
         balence: (account.balence -= withdrawal)
       })
 
+      const extract = new Extract({
+        UserId: decoded.id,
+        value: withdrawal,
+        descriptionValue: description,
+        type: 'Output'
+      })
+
+      await extract.save()
+
       res.status(200).json({
         message: 'Saque Realizado!',
-        withdrawal
+        withdrawal,
+        description
       })
     } catch (error) {
       res.status(400).json({ message: error.message })
@@ -57,12 +79,17 @@ module.exports = class AccountController {
   }
 
   static async seeAccount(req, res) {
-    const token = getToken(req)
-    const decoded = decodedToken(token)
+    // Listar a Conta por Id Do Usuário que vem do token
 
-    // Busca a conta pelo id do usuário
-    const account = await Account.findOne({ UserId: decoded.id })
+    try {
+      const token = getToken(req)
+      const decoded = decodedToken(token)
 
-    res.status(200).json(account)
+      const account = await Account.findOne({ UserId: decoded.id })
+
+      res.status(200).json(account)
+    } catch (error) {
+      res.status(400).json({ message: error.message })
+    }
   }
 }
