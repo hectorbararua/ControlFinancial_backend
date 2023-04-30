@@ -25,6 +25,7 @@ module.exports = class UserController {
 
       const passwordBcrypt = await bcrypt.hash(password, salt)
 
+      // Criando um novo usuário
       const user = new User({
         name,
         email,
@@ -34,6 +35,7 @@ module.exports = class UserController {
 
       const newUser = user.save()
 
+      // Criando uma conta com os dados do usuário
       const account = new Account({
         UserId: user.id,
         deposit: 0,
@@ -55,9 +57,11 @@ module.exports = class UserController {
     try {
       const { email, password } = req.body
 
+      // Verificando se o email ja existe no db
       const user = await User.findOne({ email })
       if (!user) throw new Error('E-mail ou senha Inválida')
 
+      // Comparando as senhas que vem do req e a do db
       const checkPassword = bcrypt.compare(password, user.password)
       if (!checkPassword) throw new Error('E-mail ou senha Inválida')
 
@@ -80,6 +84,7 @@ module.exports = class UserController {
       const salt = await bcrypt.genSalt(12)
       const passwordBcrypt = await bcrypt.hash(password, salt)
 
+      // Atualizando os dados do usuário
       const updated = await User.findByIdAndUpdate(id, {
         name,
         email,
