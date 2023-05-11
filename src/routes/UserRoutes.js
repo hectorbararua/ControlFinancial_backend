@@ -12,6 +12,6 @@ const verifyToken = require('../middlewares/verifyToken')
 router
   .post('/', UserValidationCreate, UserController.register)
   .post('/login', LoginValidation, UserController.login)
-  .patch('/:id', verifyToken, UserValidationUpdate, UserController.update)
+  .patch('/', verifyToken, UserValidationUpdate, UserController.update)
 
 module.exports = router

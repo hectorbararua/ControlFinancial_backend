@@ -61,7 +61,6 @@ module.exports = class AccountController {
 
   static async seeAccount(req, res) {
     // Listar a Conta por Id Do Usuário que vem do token
-
     try {
       const token = getToken(req)
       const decoded = decodedToken(token)

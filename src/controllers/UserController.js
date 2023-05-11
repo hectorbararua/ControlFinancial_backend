@@ -1,4 +1,6 @@
 const { User, Account } = require('../models/index')
+const getToken = require('../helpers/get-token')
+const decodedToken = require('../helpers/decoded_token')
 
 const bcrypt = require('bcrypt')
 
@@ -73,8 +75,12 @@ module.exports = class UserController {
 
   static async update(req, res) {
     try {
-      const { id } = req.params
       const { name, email, password, confirmpassword } = req.body
+
+      const token = getToken(req)
+      const decoded = decodedToken(token)
+
+      const user = await User.findOne({ _id: decoded.id })
 
       // Verificar se as Senhas São iguais
       if (password !== confirmpassword)
@@ -85,7 +91,7 @@ module.exports = class UserController {
       const passwordBcrypt = await bcrypt.hash(password, salt)
 
       // Atualizando os dados do usuário
-      const updated = await User.findByIdAndUpdate(id, {
+      await User.findByIdAndUpdate(user.id, {
         name,
         email,
         password: passwordBcrypt,

@@ -1,9 +1,12 @@
 require('dotenv/config')
 const express = require('express')
 const handleError = require('./src/helpers/handleError')
+const cors = require('cors')
 
 const app = express()
 const db = require('./src/db/conn')
+
+app.use(cors())
 
 // Config JSON
 
