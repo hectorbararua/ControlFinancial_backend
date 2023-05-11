@@ -1,7 +1,7 @@
 const { Account, Extract } = require('../models/index')
 const getToken = require('../helpers/get-token')
 const decodedToken = require('../helpers/decoded_token')
-
+//
 module.exports = class AccountController {
   static async transaction(req, res) {
     try {
