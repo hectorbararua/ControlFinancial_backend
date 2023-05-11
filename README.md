@@ -6,7 +6,7 @@ Iniciando o projeto - backend
 
 📚 Inicie uma conexão local com o MongoDB Compass.
 
-📚 Adicione o arquivo ".env" (dentro da pasta backend) e coloque essas informações que está no .env.example
+📚 Adicione o arquivo ".env" (dentro da pasta backend) e coloque as informações que está no .env.example
 
 📚 Adicione uma pasta "config" (dentro da pasta src) com o arquivo "secret.js" com as informações:
 
