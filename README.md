@@ -9,3 +9,4 @@ require('dotenv/config')
 
 module.exports = process.env.TOKEN_SECRET
 
+📚 Digite no terminal o comando 'npm start' para iniciar o projeto.
